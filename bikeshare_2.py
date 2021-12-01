@@ -15,20 +15,23 @@ def get_filters():
         (str) month - name of the month to filter by, or "all" to apply no month filter
         (str) day - name of the day of week to filter by, or "all" to apply no day filter
     """
-    city = str(input("Would you like to see data for : Chicago, New York City, or Washington? \n")).lower()
+    # city = str(input("Would you like to see data for : Chicago, New York City, or Washington? \n")).lower()
     # filter_choose = str(input("Would you like to filter the data by month, day, both, or not at all? Type \"no\" for No time filter :\n"))
-    month = str(input("what is the name of the month to filter by,or \"all\" to apply no month filter \n\
-    example: Jan, Feb, Mar, Apr, May, Jun\n")).lower()
-    day = str(input("Which day? please type the number of the day (for example : 11) :\n"))
+    # month = str(input("what is the name of the month to filter by,or \"all\" to apply no month filter \n\
+    # example: Jan, Feb, Mar, Apr, May, Jun\n")).lower()
+    # day = str(input("Which day? please type the name of the day (for example : sunday) :\n"))
 
     print('Hello! Let\'s explore some US bikeshare data!')
     # get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
+    city = str(input("Would you like to see data for : Chicago, New York City, or Washington? \n")).lower()
 
 
     # get user input for month (all, january, february, ... , june)
-
+    month = str(input("what is the name of the month to filter by,or \"all\" to apply no month filter \n\
+    example: Jan, Feb, Mar, Apr, May, Jun\n")).lower()
 
     # get user input for day of week (all, monday, tuesday, ... sunday)
+    day = str(input("Which day? please type the name of the day (for example : sunday) :\n")).title()
 
 
     print('-'*40)
@@ -46,7 +49,20 @@ def load_data(city, month, day):
     Returns:
         df - Pandas DataFrame containing city data filtered by month and day
     """
+    
+    df = pd.read_csv(CITY_DATA[city])
+    df["Start Time"] = pd.to_datetime(df["Start Time"])
+    df["month"] = df["Start Time"].dt.month
+    df["day"] = df["Start Time"].dt.day_name()
 
+    if month != 'all' :
+        months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun']
+        month = months.index(month) + 1
+        df = df[df["month"] == month]
+
+    if day != 'all':
+        # filter by day of week to create the new dataframe
+        df = df[df['day'] == day.title()]
 
     return df
 
