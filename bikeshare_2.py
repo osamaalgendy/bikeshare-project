@@ -5,6 +5,9 @@ import numpy as np
 CITY_DATA = { 'chicago': 'chicago.csv',
               'new york city': 'new_york_city.csv',
               'washington': 'washington.csv' }
+months = ["jan", "feb", "mar", "apr", "may", "jun","all"]
+days = ["sunday","saturday","monday", "Tuesday", "wednesday", "thursday", "friday", "all" ]
+
 
 def get_filters():
     """
@@ -15,23 +18,33 @@ def get_filters():
         (str) month - name of the month to filter by, or "all" to apply no month filter
         (str) day - name of the day of week to filter by, or "all" to apply no day filter
     """
-    # city = str(input("Would you like to see data for : Chicago, New York City, or Washington? \n")).lower()
-    # filter_choose = str(input("Would you like to filter the data by month, day, both, or not at all? Type \"no\" for No time filter :\n"))
-    # month = str(input("what is the name of the month to filter by,or \"all\" to apply no month filter \n\
-    # example: Jan, Feb, Mar, Apr, May, Jun\n")).lower()
-    # day = str(input("Which day? please type the name of the day (for example : sunday) :\n"))
 
     print('Hello! Let\'s explore some US bikeshare data!')
     # get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
-    city = str(input("Would you like to see data for : Chicago, New York City, or Washington? \n")).lower()
-
+    while True :
+        city = str(input("Would you like to see data for : Chicago, New York City, or Washington? \n")).lower()
+        if city in CITY_DATA:
+            break
+        else :
+            print("sorry, Please type in correct city...")
 
     # get user input for month (all, january, february, ... , june)
-    month = str(input("what is the name of the month to filter by,or \"all\" to apply no month filter \n\
-    example: Jan, Feb, Mar, Apr, May, Jun\n")).lower()
+    while True :
+        month = str(input("what is the name of the month to filter by,or \"all\" to apply no month filter \n\
+        example: Jan, Feb, Mar, Apr, May, Jun or all for no filter\n")).lower()
+        if month in months :
+            break
+        else :
+            print("Please type in correct Month...")
 
     # get user input for day of week (all, monday, tuesday, ... sunday)
-    day = str(input("Which day? please type the name of the day (for example : sunday) :\n")).title()
+    
+    while True :
+        day = str(input("Which day? please type the name of the day (for example : sunday)  or all for no filter:\n")).lower()
+        if day in days :
+            break
+        else :
+            print("Please enter a valid day...")
 
 
     print('-'*40)
@@ -53,15 +66,14 @@ def load_data(city, month, day):
     df = pd.read_csv(CITY_DATA[city])
     df["Start Time"] = pd.to_datetime(df["Start Time"])
     df["month"] = df["Start Time"].dt.month
-    df["day"] = df["Start Time"].dt.day_name()
+    df["day"] = df["Start Time"].dt.day_name().str.lower()
 
 
-    if month != 'all' or month != True :
-        months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun']
+    if month != 'all'  :
         month = months.index(month) + 1
         df = df[df["month"] == month]
 
-    if day != 'all' or day !=True :
+    if day != 'all' :
         # filter by day of week to create the new dataframe
         df = df[df['day'] == day.title()]
 
@@ -105,6 +117,8 @@ def station_stats(df):
 
 
     # display most frequent combination of start station and end station trip
+    most_combination = (df["Start Station"] + " to " + df["End Station"]).mode()[0]
+    print("display most frequent combination is %s" % most_combination)
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -128,7 +142,7 @@ def trip_duration_stats(df):
     print('-'*40)
 
 
-def user_stats(df):
+def user_stats(df,city):
     """Displays statistics on bikeshare users."""
 
     print('\nCalculating User Stats...\n')
@@ -138,12 +152,14 @@ def user_stats(df):
     print("the counts of user types is : \n %s" % df["User Type"].value_counts())
 
     # Display counts of gender
-    print("the counts of gender is : \n %s" %  df["Gender"].value_counts())
+    if city != "washington" :
+        print("the counts of gender is : \n %s" %  df["Gender"].value_counts())
 
     # Display earliest, most recent, and most common year of birth
-    print("the earliest year of birth is : %d" % df["Birth Year"].min())
-    print("the most recent year of birth is : %d" % df["Birth Year"].max())
-    print("the most common of birth is  : %d" % df["Birth Year"].mode()[0])
+    if city != "washington" :
+        print("the earliest year of birth is : %d" % df["Birth Year"].min())
+        print("the most recent year of birth is : %d" % df["Birth Year"].max())
+        print("the most common of birth is  : %d" % df["Birth Year"].mode()[0])
 
 
 
@@ -159,8 +175,7 @@ def main():
         time_stats(df)
         station_stats(df)
         trip_duration_stats(df)
-        user_stats(df)
-
+        user_stats(df,city)
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes':
             break
