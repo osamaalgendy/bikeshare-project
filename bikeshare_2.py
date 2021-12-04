@@ -24,6 +24,7 @@ def get_filters():
     while True :
         city = str(input("Would you like to see data for : Chicago, New York City, or Washington? \n")).lower()
         if city in CITY_DATA:
+            print("You select %s city" % city)
             break
         else :
             print("sorry, Please type in correct city...")
@@ -33,6 +34,7 @@ def get_filters():
         month = str(input("what is the name of the month to filter by,or \"all\" to apply no month filter \n\
         example: Jan, Feb, Mar, Apr, May, Jun or all for no filter\n")).lower()
         if month in months :
+            print("You select %s month" % month)
             break
         else :
             print("Please type in correct Month...")
@@ -42,6 +44,7 @@ def get_filters():
     while True :
         day = str(input("Which day? please type the name of the day (for example : sunday)  or all for no filter:\n")).lower()
         if day in days :
+            print("You select %s day" % day)
             break
         else :
             print("Please enter a valid day...")
@@ -75,7 +78,7 @@ def load_data(city, month, day):
 
     if day != 'all' :
         # filter by day of week to create the new dataframe
-        df = df[df['day'] == day.title()]
+        df = df[df['day'] == day.lower()]
 
     return df
 
@@ -165,6 +168,7 @@ def user_stats(df,city):
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
+
 
 
 def main():
